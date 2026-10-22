@@ -1,0 +1,47 @@
+services:
+  black-rose-dnd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: black-rose-dnd
+    restart: unless-stopped
+    expose:
+      - "4000"
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - JWT_SECRET=${JWT_SECRET:-change_this_to_a_secure_random_string_in_production}
+      - CARDS_PATH=/app/reference_data/magic_cards
+      - CORS_ORIGIN=${CORS_ORIGIN:-https://${DOMAIN:-localhost}}
+    volumes:
+      # Persistent SQLite database storage
+      - ./backend/data:/app/backend/data
+      # Optional local card images volume
+      - ./reference_data/magic_cards:/app/reference_data/magic_cards:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: black-rose-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      black-rose-dnd:
+        condition: service_healthy
+
+volumes:
+  caddy_data:
+  caddy_config:

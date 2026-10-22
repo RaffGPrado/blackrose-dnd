@@ -1,0 +1,24 @@
+# 🌹 Black Rose D&D 5e — Caddy Production Reverse Proxy
+# Automates SSL/TLS certificates (Let's Encrypt / ZeroSSL) & WebSocket proxying
+
+{$DOMAIN:localhost} {
+    # Modern compression
+    encode zstd gzip
+
+    # Reverse proxy all requests to backend (Node.js API + WebSocket + SPA)
+    reverse_proxy black-rose-dnd:4000 {
+        # WebSocket support headers
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
