@@ -1,0 +1,48 @@
+{
+  "name": "black-rose-dnd-backend",
+  "version": "1.0.0",
+  "description": "Lightweight Node.js REST API for D&D 5e Character Sheets and Spell Grimoire",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "tsx --experimental-sqlite src/index.ts",
+    "dev": "tsx watch --experimental-sqlite src/index.ts",
+    "seed": "tsx --experimental-sqlite src/scripts/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "bench": "node --experimental-sqlite test/benchmark_5_players.js",
+    "build:frontend": "npm run --prefix ../frontend build",
+    "reset-password": "tsx --experimental-sqlite src/scripts/reset_password.ts"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^1.0.0-rc.4",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "neverthrow": "^8.2.0",
+    "ws": "^8.21.3"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.5.1",
+    "@types/ws": "^8.18.1",
+    "@vitest/coverage-v8": "^5.0.1",
+    "drizzle-kit": "^1.0.0-rc.4",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.1"
+  }
+}
