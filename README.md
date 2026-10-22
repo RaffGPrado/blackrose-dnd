@@ -165,22 +165,28 @@ sequenceDiagram
 
 ## 7. Visão de Implantação (Deployment View)
 
-### 7.1 Execução com Docker Compose (Recomendado)
+### 7.1 Produção com HTTPS Automático via Caddy (Recomendado)
+
+O projeto inclui orquestração com **Caddy Reverse Proxy**, que gerencia certificados SSL/TLS automaticamente via Let's Encrypt / ZeroSSL, habilita compressão moderna (zstd/gzip) e proxy transparente para WebSockets (`/ws`).
 
 ```bash
-# 1. Copie o arquivo de exemplo de ambiente
+# 1. Copie o arquivo de exemplo de ambiente e informe seu domínio
 cp .env.example .env
+# Defina DOMAIN=rpg.seusite.com no .env
 
-# 2. Suba o ambiente completo
+# 2. Suba o ambiente de produção completo com HTTPS
+docker compose -f docker-compose.prod.yml up --build -d
+```
+Acesse: **`https://rpg.seusite.com`**
+
+### 7.2 Execução Rápida via Docker Compose (Sem Caddy / Local)
+
+```bash
 docker compose up --build
 ```
 Acesse: **`http://localhost:4000`**
 
-- O Docker compila a SPA React e serve estaticamente junto com a API na mesma porta.
-- O banco SQLite é salvo no volume montado `./backend/data`.
-- Para mapear cartas locais opcionais, aponte a pasta no volume `./reference_data/magic_cards`.
-
-### 7.2 Execução em Desenvolvimento Local
+### 7.3 Execução em Desenvolvimento Local
 
 #### Backend (Porta 4000)
 ```bash
@@ -203,9 +209,12 @@ npm run dev    # Inicia servidor Vite com hot-reload
 ## 8. Conceitos Transversais (Cross-Cutting)
 
 ### 8.1 Segurança & Sanitização
-- **Zero Secrets Hardcoded**: Chaves JWT e credenciais são passadas estritamente via variáveis de ambiente.
-- **Proteção contra Injeção**: Queries parametrizadas via Drizzle ORM e Prepared Statements nativos do SQLite.
-- **Hash de Senhas**: Utilização de `bcrypt` com salt rounds para armazenamento seguro de credenciais.
+- **Validação Estrita na Borda (Zod)**: Todos os corpos de requisições (`req.body`) de registro, login, criação de ficha, ataques e itens são validados e tipados por schemas Zod antes de atingir as camadas de domínio ou persistência.
+- **Proteção contra Força Bruta (Rate Limiting)**: Os endpoints `/api/auth/login` e `/api/auth/register` possuem rate limiting restrito (10 tentativas por minuto por IP) via `express-rate-limit`.
+- **Headers de Segurança HTTP (Helmet)**: Proteção ativa contra clickjacking, MIME-type sniffing e injeções através de headers como X-Content-Type-Options e Strict-Transport-Security (HSTS).
+- **Reverse Proxy Readiness**: Configuração `app.set('trust proxy', 1)` para identificação fidedigna do IP do cliente e protocolo seguro atrás de proxies (Caddy, Cloudflare, Nginx).
+- **Zero Secrets Hardcoded**: Chaves JWT e credenciais são passadas estritamente via variáveis de ambiente com validação em tempo de inicialização em produção.
+- **Proteção contra Injeção SQL**: Prepared statements e queries parametrizadas via Drizzle ORM sobre `node:sqlite`.
 
 ### 8.2 Fallback Visual de Assets
 Quando imagens de cartas de magia não forem fornecidas, o frontend ativa automaticamente um cartão estilizado com gradiente, título da magia e tag colorida correspondente à Escola de Magia (Evocação, Abjuração, etc.), mantendo a usabilidade completa do grimório.
