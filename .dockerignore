@@ -1,0 +1,28 @@
+# Dependencies
+**/node_modules
+**/.npm
+
+# Version Control
+**/.git
+**/.gitignore
+
+# Build outputs
+**/dist
+**/.turbo
+
+# Documentation and support artifacts
+apoio/
+reference_data/
+
+# Environment files
+**/.env
+**/.env.local
+
+# Logs
+**/logs
+*.log
+npm-debug.log*
+
+# System
+**/.DS_Store
+**/.gemini
