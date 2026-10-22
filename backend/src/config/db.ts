@@ -293,6 +293,11 @@ export const initSchema = (): void => {
       recovery TEXT DEFAULT 'Descanso Longo',
       description TEXT
     );
+
+    CREATE INDEX IF NOT EXISTS idx_spells_level ON spells(level);
+    CREATE INDEX IF NOT EXISTS idx_spells_school ON spells(school);
+    CREATE INDEX IF NOT EXISTS idx_ref_items_category ON reference_items(category);
+    CREATE INDEX IF NOT EXISTS idx_ref_features_class_lvl ON reference_features(class_name, level);
   `);
     },
     (err) => {

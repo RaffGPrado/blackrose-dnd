@@ -4,20 +4,17 @@ import jwt from 'jsonwebtoken';
 import { Result, ResultAsync } from 'neverthrow';
 import { authenticateToken } from '../middleware/auth.js';
 import { authRepository } from '../infrastructure/database/SqliteAuthRepository.js';
+import { validateBody } from '../middleware/validate.js';
+import { registerSchema, loginSchema, type RegisterInput, type LoginInput } from '../application/validators/authSchemas.js';
 
 const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'black_rose_dnd_super_secret_jwt_key_2026';
 
-router.post('/register', async (req: Request, res: Response): Promise<void> => {
-  const { name, email, password } = req.body as { name?: string; email?: string; password?: string };
-
-  if (!name || !email || !password) {
-    res.status(400).json({ error: 'Name, email, and password are required' });
-    return;
-  }
+router.post('/register', validateBody(registerSchema), async (req: Request, res: Response): Promise<void> => {
+  const { name, email, password } = req.body as RegisterInput;
 
   const dbOpResult = Result.fromThrowable(
-    () => authRepository.findByEmail(email.toLowerCase().trim()),
+    () => authRepository.findByEmail(email),
     (e) => e
   )();
 
@@ -71,16 +68,11 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
   res.status(201).json({ message: 'User registered successfully', token: tokenResult.value, user });
 });
 
-router.post('/login', async (req: Request, res: Response): Promise<void> => {
-  const { email, password } = req.body as { email?: string; password?: string };
-
-  if (!email || !password) {
-    res.status(400).json({ error: 'Email and password are required' });
-    return;
-  }
+router.post('/login', validateBody(loginSchema), async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body as LoginInput;
 
   const userResult = Result.fromThrowable(
-    () => authRepository.findByEmail(email.toLowerCase().trim()),
+    () => authRepository.findByEmail(email),
     (e) => e
   )();
 

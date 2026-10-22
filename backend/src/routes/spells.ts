@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import { Result } from 'neverthrow';
 import { authenticateToken } from '../middleware/auth.js';
 import { spellsRepository } from '../infrastructure/database/SqliteSpellsRepository.js';
+import { validateBody } from '../middleware/validate.js';
+import { addSpellToGrimoireSchema } from '../application/validators/characterSchemas.js';
 
 const router = express.Router();
 
@@ -20,6 +22,7 @@ router.get('/', (req: Request, res: Response): void => {
     return;
   }
 
+  res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
   res.json({ spells: result.value, total: result.value.length });
 });
 
@@ -35,14 +38,15 @@ router.get('/schools', (_req: Request, res: Response): void => {
     return;
   }
 
+  res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
   res.json({ schools: result.value });
 });
 
-router.post('/character/:characterId/spells', authenticateToken, (req: Request, res: Response): void => {
+router.post('/character/:characterId/spells', authenticateToken, validateBody(addSpellToGrimoireSchema), (req: Request, res: Response): void => {
   const result = Result.fromThrowable(
     () => {
       const characterId = Number(req.params.characterId);
-      const { spell_id } = req.body as { spell_id?: number };
+      const { spell_id } = req.body as { spell_id: number };
       return { characterId, spell_id };
     },
     (error) => error

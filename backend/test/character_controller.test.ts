@@ -17,6 +17,9 @@ function createMockResponse() {
       res._jsonData = data;
       return res;
     }),
+    setHeader: vi.fn().mockImplementation(function () {
+      return res;
+    }),
   };
   return res as Response & { _statusCode: number; _jsonData: unknown };
 }

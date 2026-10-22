@@ -19,6 +19,7 @@ router.get('/items', (req: Request, res: Response): void => {
     return;
   }
 
+  res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
   res.json({ items: result.value, total: result.value.length });
 });
 
@@ -42,6 +43,7 @@ router.get('/features', (req: Request, res: Response): void => {
     return;
   }
 
+  res.setHeader('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
   res.json({ features: result.value, total: result.value.length });
 });
 
@@ -57,7 +59,9 @@ router.get('/categories', (_req: Request, res: Response): void => {
     return;
   }
 
-  res.json({
+  res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+  res.json({ categories: result.value });
+});
     item_categories: result.value.item_categories,
     classes: result.value.classes,
   });

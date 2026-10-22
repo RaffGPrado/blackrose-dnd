@@ -5,6 +5,9 @@ import { broadcastCharacterPatch } from '../../websocket/GameServer.js';
 export function createCharacterController(repo: ICharacterRepository) {
   return {
     getMetaOptions: (_req: Request, res: Response): void => {
+      if (typeof res.setHeader === 'function') {
+        res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
+      }
       repo.getMetaOptions().match(
         (data) => res.json(data),
         () => res.status(500).json({ error: 'Failed to fetch metadata options' })
