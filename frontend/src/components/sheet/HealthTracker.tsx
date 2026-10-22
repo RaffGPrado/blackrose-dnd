@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Skull, Undo2, Shield, Zap } from 'lucide-react';
+import { toast } from 'sonner';
 import { useCharacterActions } from '../../context/CharacterContext';
 import {
   NormalDamageStrategy,
@@ -13,6 +14,16 @@ import {
   HealCommand,
 } from '../../domain/commands/CombatActionHistory';
 import type { EnrichedCharacter } from '../../types/dnd5e';
+
+function triggerHaptic(duration = 20): void {
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate(duration);
+    } catch {
+      // Ignora falhas em navegadores sem suporte
+    }
+  }
+}
 
 interface HealthTrackerProps {
   character: EnrichedCharacter;
@@ -37,6 +48,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
   };
 
   const handleApplyDamage = async (amount: number) => {
+    triggerHaptic(25);
     const strategy = getActiveStrategy();
     const command = new ApplyDamageCommand(amount, strategy);
     const currentState = {
@@ -51,9 +63,11 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
       current_hp: nextState.currentHp,
       temp_hp: nextState.tempHp,
     });
+    toast.error(`Dano sofrido: -${amount} HP`);
   };
 
   const handleApplyHeal = async (amount: number) => {
+    triggerHaptic(15);
     const command = new HealCommand(amount);
     const currentState = {
       currentHp: character.current_hp,
@@ -67,9 +81,11 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
       current_hp: nextState.currentHp,
       temp_hp: nextState.tempHp,
     });
+    toast.success(`Cura recebida: +${amount} HP`);
   };
 
   const handleUndo = async () => {
+    triggerHaptic(10);
     const currentState = {
       currentHp: character.current_hp,
       maxHp: character.max_hp,
@@ -83,6 +99,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
       current_hp: reverted.currentHp,
       temp_hp: reverted.tempHp,
     });
+    toast.info('Ação de combate desfeita');
   };
 
   return (
@@ -179,6 +196,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
           type="button"
           onClick={() => handleApplyDamage(5)}
           className="h-12 bg-rose-950/60 hover:bg-rose-950 border border-rose-800/50 text-rose-300 rounded-xl text-sm font-black active:scale-95 transition-all flex items-center justify-center shadow-sm min-h-12"
+          aria-label="Aplicar 5 de dano"
           title="Dano -5"
         >
           -5
@@ -187,6 +205,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
           type="button"
           onClick={() => handleApplyDamage(1)}
           className="h-12 bg-rose-950/60 hover:bg-rose-950 border border-rose-800/50 text-rose-300 rounded-xl text-sm font-black active:scale-95 transition-all flex items-center justify-center shadow-sm min-h-12"
+          aria-label="Aplicar 1 de dano"
           title="Dano -1"
         >
           -1
@@ -195,6 +214,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
           type="button"
           onClick={() => handleApplyHeal(1)}
           className="h-12 bg-emerald-950/60 hover:bg-emerald-950 border border-emerald-800/50 text-emerald-300 rounded-xl text-sm font-black active:scale-95 transition-all flex items-center justify-center shadow-sm min-h-12"
+          aria-label="Curar 1 de vida"
           title="Cura +1"
         >
           +1
@@ -203,6 +223,7 @@ export const HealthTracker: React.FC<HealthTrackerProps> = ({ character }) => {
           type="button"
           onClick={() => handleApplyHeal(5)}
           className="h-12 bg-emerald-950/60 hover:bg-emerald-950 border border-emerald-800/50 text-emerald-300 rounded-xl text-sm font-black active:scale-95 transition-all flex items-center justify-center shadow-sm min-h-12"
+          aria-label="Curar 5 de vida"
           title="Cura +5"
         >
           +5
