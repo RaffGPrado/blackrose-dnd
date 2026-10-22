@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181824"/>
+      <stop offset="100%" stop-color="#090a0f"/>
+    </linearGradient>
+    <linearGradient id="rose" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="50%" stop-color="#e11d48"/>
+      <stop offset="100%" stop-color="#881337"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="210" fill="none" stroke="#e11d48" stroke-width="4" stroke-opacity="0.3"/>
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#f43f5e" stroke-width="2" stroke-opacity="0.2"/>
+  <!-- D20 Shape Outline Background -->
+  <polygon points="256,90 390,165 390,345 256,420 122,345 122,165" fill="#1f1424" stroke="#f43f5e" stroke-width="6" stroke-linejoin="round"/>
+  <!-- Rose Blossom in Center -->
+  <path d="M256,160 C230,160 210,180 210,210 C210,245 256,290 256,290 C256,290 302,245 302,210 C302,180 282,160 256,160 Z" fill="url(#rose)"/>
+  <path d="M256,190 C245,190 235,200 235,215 C235,235 256,260 256,260 C256,260 277,235 277,215 C277,200 267,190 256,190 Z" fill="#fda4af"/>
+  <!-- Crossed Daggers / Thorns -->
+  <path d="M190,310 L256,360 L322,310" fill="none" stroke="#f43f5e" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M256,360 L256,410" stroke="#f43f5e" stroke-width="8" stroke-linecap="round"/>
+  <!-- Sparkles -->
+  <circle cx="160" cy="180" r="4" fill="#fb7185"/>
+  <circle cx="352" cy="180" r="4" fill="#fb7185"/>
+  <circle cx="256" cy="130" r="6" fill="#f43f5e"/>
+</svg>
