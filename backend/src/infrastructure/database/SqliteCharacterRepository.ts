@@ -333,6 +333,7 @@ export const sqliteCharacterRepository: ICharacterRepository = {
           school: s.spell.school,
           image_filename: s.spell.imageFilename,
           image_path: s.spell.imagePath,
+          image_url: s.spell.imagePath,
           casting_time: s.spell.castingTime,
           range: s.spell.range,
           components: s.spell.components,

@@ -98,6 +98,7 @@ if (!spellCount || spellCount.count === 0 || !refItemCount || refItemCount.count
 const candidatePaths = [
   process.env.CARDS_PATH,
   path.resolve(__dirname, '../assets/magic_cards'),
+  path.resolve(__dirname, '../../reference_data/magic_cards'),
 ].filter((p): p is string => Boolean(p));
 
 const cardsPath = candidatePaths.find((p) => fs.existsSync(p)) || path.resolve(__dirname, '../assets/magic_cards');

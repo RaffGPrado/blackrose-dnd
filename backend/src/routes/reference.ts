@@ -60,8 +60,7 @@ router.get('/categories', (_req: Request, res: Response): void => {
   }
 
   res.setHeader('Cache-Control', 'public, max-age=86400, stale-while-revalidate=604800');
-  res.json({ categories: result.value });
-});
+  res.json({
     item_categories: result.value.item_categories,
     classes: result.value.classes,
   });

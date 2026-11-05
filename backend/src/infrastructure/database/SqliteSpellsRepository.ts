@@ -12,6 +12,9 @@ function toSpellCard(row: typeof spells.$inferSelect): SpellCard {
     school: row.school,
     image_filename: row.imageFilename,
     image_path: row.imagePath,
+    image_url: row.imagePath,
+    casting_time: row.castingTime ?? undefined,
+    range: row.range ?? undefined,
   };
 }
 

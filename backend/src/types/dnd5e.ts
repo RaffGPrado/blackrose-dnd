@@ -130,6 +130,9 @@ export interface SpellRow {
   school: string;
   image_filename: string;
   image_path: string;
+  image_url?: string;
+  casting_time?: string;
+  range?: string;
 }
 
 export interface UserRow {

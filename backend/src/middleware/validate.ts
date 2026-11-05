@@ -1,14 +1,14 @@
 import type { Request, Response, NextFunction } from 'express';
-import { ZodError, type ZodSchema } from 'zod';
+import type { ZodType } from 'zod';
 
-export function validateBody<T>(schema: ZodSchema<T>) {
+export function validateBody<T>(schema: ZodType<T>) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const parseResult = schema.safeParse(req.body);
 
     if (!parseResult.success) {
-      const errorMessages = parseResult.error.errors.map((e) => ({
-        field: e.path.join('.'),
-        message: e.message,
+      const errorMessages = parseResult.error.issues.map((issue) => ({
+        field: issue.path.join('.'),
+        message: issue.message,
       }));
 
       res.status(400).json({
@@ -23,14 +23,14 @@ export function validateBody<T>(schema: ZodSchema<T>) {
   };
 }
 
-export function validateQuery<T>(schema: ZodSchema<T>) {
+export function validateQuery<T>(schema: ZodType<T>) {
   return (req: Request, res: Response, next: NextFunction): void => {
     const parseResult = schema.safeParse(req.query);
 
     if (!parseResult.success) {
-      const errorMessages = parseResult.error.errors.map((e) => ({
-        field: e.path.join('.'),
-        message: e.message,
+      const errorMessages = parseResult.error.issues.map((issue) => ({
+        field: issue.path.join('.'),
+        message: issue.message,
       }));
 
       res.status(400).json({

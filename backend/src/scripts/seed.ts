@@ -452,10 +452,12 @@ const seedCompendiumReference = (): void => {
 
 const seedSpells = (): void => {
   const candidateCardPaths = [
+    process.env.CARDS_PATH ?? '',
     path.join(__dirname, '../../assets/magic_cards'),
     path.join(__dirname, '../assets/magic_cards'),
+    path.resolve(__dirname, '../../../reference_data/magic_cards'),
   ];
-  const cardsRoot = candidateCardPaths.find((p) => fs.existsSync(p));
+  const cardsRoot = candidateCardPaths.find((p) => Boolean(p) && fs.existsSync(p));
   if (!cardsRoot) {
     return;
   }
