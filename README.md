@@ -27,12 +27,14 @@
 O **Black Rose D&D** é um ecossistema projetado para agilizar o gerenciamento de fichas de personagens de D&D 5ª Edição e a condução de combates pelo Mestre (DM) em mesas presenciais e remotas, priorizando ergonomia móvel e tolerância a quedas de conexão.
 
 ### 1.1 Objetivos de Negócio & Funcionais
+
 - **Ficha Móvel de Alta Densidade**: Interface touch pensada para smartphones com ajustes de vida instantâneos (`-5`, `-1`, `+1`, `+5`), tracking de dados de vida, slots de magia e ações de combate.
 - **Painel em Tempo Real do Mestre (DM Dashboard)**: Visão agregada de iniciativa, HP e status de todos os jogadores conectados via WebSockets em tempo real.
 - **Catálogo & Grimório Desacoplado**: Consulta de magias e itens com busca rápida e suporte a fallback nativo quando imagens não estiverem configuradas.
 - **Resiliência Offline-First (PWA)**: Capacidade de jogar e alterar a ficha mesmo sem internet no local da partida, sincronizando automaticamente ao reconectar.
 
 ### 1.2 Stakeholders
+
 | Papel | Expectativa Principal |
 | :--- | :--- |
 | **Jogador (Player)** | Velocidade para atualizar HP, gastar slots e lançar magias em segundos sem telas lentas. |
@@ -44,10 +46,12 @@ O **Black Rose D&D** é um ecossistema projetado para agilizar o gerenciamento d
 ## 2. Restrições de Arquitetura
 
 ### 2.1 Restrições Técnicas & Operacionais
+
 - **Banco Embutido Zero-Config**: Utilização do SQLite nativo do Node.js (`node:sqlite` + Drizzle ORM) no modo WAL, sem exigir instâncias externas de PostgreSQL ou Redis.
 - **Mobile Target**: Funcional em qualquer navegador moderno mobile via Progressive Web App (PWA) e Service Worker.
 
 ### 2.2 Restrições Legais e Propriedade Intelectual (Copyright)
+
 - **SRD 5.1 Compatibility**: O repositório inclui exclusivamente dados sob licença **Creative Commons Attribution 4.0 International (CC-BY-4.0)** da *Wizards of the Coast LLC*.
 - **Sem Assets Proprietários no Código-Fonte**: Imagens comerciais de cartas de magias, artes protegidas e dumps com dados pessoais de campanhas privadas **não são distribuídos** no repositório. O sistema foi construído para funcionar com dados abertos e renderizar fallbacks visuais limpos.
 
@@ -59,10 +63,10 @@ O **Black Rose D&D** é um ecossistema projetado para agilizar o gerenciamento d
 
 ```mermaid
 flowchart LR
-    Player["📱 Jogador (Mobile Browser / PWA)"]
-    DM["💻 Mestre (DM Dashboard)"]
-    System["🌹 Black Rose D&D"]
-    LocalAssets["📁 Assets Locais / Volume (Opcional)"]
+    Player[" Jogador (Mobile Browser / PWA)"]
+    DM[" Mestre (DM Dashboard)"]
+    System[" Black Rose D&D"]
+    LocalAssets[" Assets Locais / Volume (Opcional)"]
 
     Player <-->|HTTP REST & Eventos WebSocket| System
     DM <-->|Monitoramento em Tempo Real /ws| System
@@ -70,6 +74,7 @@ flowchart LR
 ```
 
 ### 3.2 Contexto Técnico
+
 - **Frontend SPA**: React 18, Vite, Tailwind CSS, Lucide Icons, Service Worker (Workbox).
 - **Backend API**: Node.js 22+, Express, Native SQLite (`DatabaseSync`), Drizzle ORM, WebSocket (`ws`).
 - **Autenticação**: Bearer Tokens JWT com hash de senhas via `bcrypt`.
@@ -113,6 +118,7 @@ flowchart TD
 ## 5. Visão dos Blocos de Construção (Building Blocks)
 
 ### 5.1 Estrutura de Diretórios
+
 ```
 black_rose_dnd/
 ├── backend/
@@ -177,18 +183,19 @@ cp .env.example .env
 # 2. Suba o ambiente de produção completo com HTTPS
 docker compose -f docker-compose.prod.yml up --build -d
 ```
-Acesse: **`https://rpg.seusite.com`**
 
 ### 7.2 Execução Rápida via Docker Compose (Sem Caddy / Local)
 
 ```bash
 docker compose up --build
 ```
+
 Acesse: **`http://localhost:4000`**
 
 ### 7.3 Execução em Desenvolvimento Local
 
 #### Backend (Porta 4000)
+
 ```bash
 cd backend
 npm install
@@ -197,6 +204,7 @@ npm run dev    # Inicia a API com recarregamento dinâmico
 ```
 
 #### Frontend (Porta 3000)
+
 ```bash
 cd frontend
 npm install
@@ -209,6 +217,7 @@ npm run dev    # Inicia servidor Vite com hot-reload
 ## 8. Conceitos Transversais (Cross-Cutting)
 
 ### 8.1 Segurança & Sanitização
+
 - **Validação Estrita na Borda (Zod)**: Todos os corpos de requisições (`req.body`) de registro, login, criação de ficha, ataques e itens são validados e tipados por schemas Zod antes de atingir as camadas de domínio ou persistência.
 - **Proteção contra Força Bruta (Rate Limiting)**: Os endpoints `/api/auth/login` e `/api/auth/register` possuem rate limiting restrito (10 tentativas por minuto por IP) via `express-rate-limit`.
 - **Headers de Segurança HTTP (Helmet)**: Proteção ativa contra clickjacking, MIME-type sniffing e injeções através de headers como X-Content-Type-Options e Strict-Transport-Security (HSTS).
@@ -217,6 +226,7 @@ npm run dev    # Inicia servidor Vite com hot-reload
 - **Proteção contra Injeção SQL**: Prepared statements e queries parametrizadas via Drizzle ORM sobre `node:sqlite`.
 
 ### 8.2 Fallback Visual de Assets
+
 Quando imagens de cartas de magia não forem fornecidas, o frontend ativa automaticamente um cartão estilizado com gradiente, título da magia e tag colorida correspondente à Escola de Magia (Evocação, Abjuração, etc.), mantendo a usabilidade completa do grimório.
 
 ---
@@ -256,9 +266,11 @@ Quando imagens de cartas de magia não forem fornecidas, o frontend ativa automa
 ## 12. Atribuição Legal e Licença
 
 ### 12.1 Licença do Código-Fonte
+
 O código-fonte deste projeto está licenciado sob a licença **MIT** — consulte o arquivo [LICENSE](LICENSE) para detalhes.
 
 ### 12.2 Atribuição de Conteúdo de Terceiros (SRD 5.1 / CC-BY-4.0)
+
 Este trabalho inclui material extraído do *System Reference Document 5.1* ("SRD 5.1") da **Wizards of the Coast LLC**, disponível em [https://dnd.wizards.com/resources/systems-reference-document](https://dnd.wizards.com/resources/systems-reference-document).
 
 O SRD 5.1 está licenciado sob a **Creative Commons Attribution 4.0 International License**, disponível em [https://creativecommons.org/licenses/by/4.0/legalcode](https://creativecommons.org/licenses/by/4.0/legalcode).

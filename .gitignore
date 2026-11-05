@@ -40,6 +40,7 @@ coverage/
 
 # Temporary and scratch files
 scratch/
+temp-design/
 backend/test-bs3.ts
 patch_facade.js
 patch_hooks.js
