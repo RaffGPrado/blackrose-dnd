@@ -43,32 +43,32 @@ export const SpellFilters: React.FC<SpellFiltersProps> = ({
   ];
 
   return (
-    <div className="bg-dnd-surface border border-dnd-border rounded-xl p-3 shadow-dnd-card space-y-3">
+    <div className="codex-card p-3 space-y-2.5">
       <div className="flex gap-2">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-3 text-dnd-dim" />
+        <div className="relative flex-1 min-w-0">
+          <Search className="w-4 h-4 absolute left-3 top-3 text-ink-soft" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Buscar magia..."
-            className="w-full bg-dnd-elevated border border-dnd-border rounded-lg pl-9 pr-8 py-2.5 text-base sm:text-xs text-white placeholder-dnd-dim focus:outline-none focus:border-dnd-blue/60 min-h-11"
+            className="w-full bg-elevated border border-rule rounded-xl pl-9 pr-8 py-2 text-sm text-ink placeholder:text-ink-faint focus:outline-none focus:border-rose h-10"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-2.5 text-dnd-dim hover:text-white p-1 min-h-8 min-w-8 flex items-center justify-center"
+              className="absolute right-2 top-2 text-ink-soft hover:text-ink p-1 h-6 w-6 flex items-center justify-center"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
-        <div className="flex bg-dnd-elevated border border-dnd-border rounded-lg p-0.5 items-center">
+        <div className="flex bg-elevated border border-rule rounded-xl p-0.5 items-center shrink-0">
           <button
             type="button"
             onClick={() => setViewMode('grid')}
-            className={`p-2 rounded-md transition-colors min-h-10 min-w-10 flex items-center justify-center ${viewMode === 'grid' ? 'bg-dnd-blue text-white' : 'text-dnd-muted hover:text-white'}`}
+            className={`p-2 rounded-lg transition-colors h-9 w-9 flex items-center justify-center tap-control ${viewMode === 'grid' ? 'bg-rose text-white' : 'text-ink-soft hover:text-ink'}`}
             title="Visualização em Grid (Cartas)"
           >
             <LayoutGrid className="w-4 h-4" />
@@ -76,7 +76,7 @@ export const SpellFilters: React.FC<SpellFiltersProps> = ({
           <button
             type="button"
             onClick={() => setViewMode('list')}
-            className={`p-2 rounded-md transition-colors min-h-10 min-w-10 flex items-center justify-center ${viewMode === 'list' ? 'bg-dnd-blue text-white' : 'text-dnd-muted hover:text-white'}`}
+            className={`p-2 rounded-lg transition-colors h-9 w-9 flex items-center justify-center tap-control ${viewMode === 'list' ? 'bg-rose text-white' : 'text-ink-soft hover:text-ink'}`}
             title="Visualização em Lista Compacta"
           >
             <List className="w-4 h-4" />
@@ -84,18 +84,18 @@ export const SpellFilters: React.FC<SpellFiltersProps> = ({
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <select
           value={selectedLevel}
           onChange={(e) => setSelectedLevel(e.target.value)}
-          className="flex-1 bg-dnd-elevated border border-dnd-border rounded-lg px-2.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-dnd-blue/60 appearance-none min-h-11"
+          className="w-full min-w-0 bg-elevated border border-rule rounded-xl px-2.5 py-2 text-xs font-medium text-ink focus:outline-none focus:border-rose h-10"
         >
           {levels.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
         </select>
         <select
           value={selectedSchool}
           onChange={(e) => setSelectedSchool(e.target.value)}
-          className="flex-1 bg-dnd-elevated border border-dnd-border rounded-lg px-2.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-dnd-blue/60 appearance-none min-h-11"
+          className="w-full min-w-0 bg-elevated border border-rule rounded-xl px-2.5 py-2 text-xs font-medium text-ink focus:outline-none focus:border-rose h-10"
         >
           <option value="">Todas as Escolas</option>
           {schools.map((s) => <option key={s} value={s}>{s}</option>)}
@@ -107,7 +107,7 @@ export const SpellFilters: React.FC<SpellFiltersProps> = ({
           <button
             type="button"
             onClick={clearAllFilters}
-            className="text-xs font-bold text-dnd-muted hover:text-white underline underline-offset-2 flex items-center gap-1 p-1 min-h-8"
+            className="text-xs font-bold text-rose hover:underline underline-offset-2 flex items-center gap-1 p-1"
           >
             <X className="w-3.5 h-3.5" /> Limpar Filtros
           </button>

@@ -6,22 +6,49 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        serif: ['"Fraunces Variable"', 'Georgia', 'serif'],
+        sans: ['"Inter Variable"', 'system-ui', '-apple-system', 'sans-serif'],
+      },
       colors: {
-        dnd: {
-          // Layered surfaces (Elevation system)
-          dark: '#0a0a0f',       // App Canvas / background
-          surface: '#12131d',    // Main cards, headers, containers
-          elevated: '#181a26',   // Nested cards, inputs, secondary blocks
-          highlight: '#202334',  // Hover states, active elements
-          border: '#26293a',     // Subtle contrast border
-          'border-focus': '#e11d48',
-          
-          // Semantic text tokens
-          text: '#f3f4f6',
-          muted: '#9ca3af',
-          dim: '#6b7280',
+        // Codex Editorial Tokens (Automatic Light Parchment / Dark Grimoire)
+        paper: 'rgb(var(--paper) / <alpha-value>)',
+        card: 'rgb(var(--card) / <alpha-value>)',
+        elevated: 'rgb(var(--elevated) / <alpha-value>)',
+        ink: {
+          DEFAULT: 'rgb(var(--ink) / <alpha-value>)',
+          soft: 'rgb(var(--ink-soft) / <alpha-value>)',
+          faint: 'rgb(var(--ink-faint) / <alpha-value>)',
+        },
+        rule: {
+          DEFAULT: 'rgb(var(--rule) / <alpha-value>)',
+          strong: 'rgb(var(--rule-strong) / <alpha-value>)',
+        },
+        rose: {
+          DEFAULT: 'rgb(var(--rose) / <alpha-value>)',
+          soft: 'rgb(var(--rose-soft) / <alpha-value>)',
+        },
+        heal: {
+          DEFAULT: 'rgb(var(--heal) / <alpha-value>)',
+          soft: 'rgb(var(--heal-soft) / <alpha-value>)',
+        },
+        gold: {
+          DEFAULT: 'rgb(var(--gold) / <alpha-value>)',
+          soft: 'rgb(var(--gold-soft) / <alpha-value>)',
+        },
 
-          // Black Rose Brand Accents
+        // Legacy dnd.* tokens mapped to Codex palette for seamless compatibility across all pages
+        dnd: {
+          dark: 'rgb(var(--paper) / <alpha-value>)',
+          surface: 'rgb(var(--card) / <alpha-value>)',
+          elevated: 'rgb(var(--elevated) / <alpha-value>)',
+          highlight: 'rgb(var(--rule) / <alpha-value>)',
+          border: 'rgb(var(--rule) / <alpha-value>)',
+          'border-focus': 'rgb(var(--rose) / <alpha-value>)',
+          text: 'rgb(var(--ink) / <alpha-value>)',
+          muted: 'rgb(var(--ink-soft) / <alpha-value>)',
+          dim: 'rgb(var(--ink-faint) / <alpha-value>)',
+
           rose: {
             DEFAULT: '#e11d48',
             light: '#fb7185',
@@ -50,14 +77,20 @@ export default {
           },
         },
       },
+      minHeight: {
+        tap: '48px',
+      },
+      minWidth: {
+        tap: '48px',
+      },
       screens: {
         'xs': '380px',
       },
       boxShadow: {
         'dnd-glow': '0 0 20px -5px rgba(225, 29, 72, 0.3)',
-        'dnd-card': '0 4px 20px -2px rgba(0, 0, 0, 0.45)',
+        'dnd-card': '0 4px 20px -2px rgba(0, 0, 0, 0.25)',
       },
     },
   },
   plugins: [],
-}
+};

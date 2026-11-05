@@ -168,36 +168,37 @@ export const GrimoireSheet: React.FC<GrimoireSheetProps> = ({
     setSelectedSchool('');
   };
 
+  const rawAtkBonus = String(character.spell_attack_bonus ?? '0');
   const formattedAttackBonus =
-    character.spell_attack_bonus >= 0
-      ? `+${character.spell_attack_bonus}`
-      : `${character.spell_attack_bonus}`;
+    rawAtkBonus.startsWith('+') || rawAtkBonus.startsWith('-')
+      ? rawAtkBonus
+      : `+${rawAtkBonus}`;
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-3">
-        <div className="bg-dnd-surface border border-dnd-border rounded-2xl p-3 flex items-center justify-between">
+        <div className="codex-card p-3 flex items-center justify-between">
           <div>
-            <span className="block text-[10px] uppercase tracking-wider font-bold text-dnd-muted">
+            <span className="block text-[10px] uppercase tracking-wider font-bold text-ink-soft">
               CD de Magia
             </span>
-            <span className="text-xl font-black text-fuchsia-400 tabular-nums">
+            <span className="font-serif text-2xl font-bold text-rose tabular-nums">
               {character.spell_save_dc}
             </span>
           </div>
-          <Sparkles className="w-5 h-5 text-fuchsia-400/70" />
+          <Sparkles className="w-5 h-5 text-rose/70" />
         </div>
 
-        <div className="bg-dnd-surface border border-dnd-border rounded-2xl p-3 flex items-center justify-between">
+        <div className="codex-card p-3 flex items-center justify-between">
           <div>
-            <span className="block text-[10px] uppercase tracking-wider font-bold text-dnd-muted">
+            <span className="block text-[10px] uppercase tracking-wider font-bold text-ink-soft">
               Ataque Mágico
             </span>
-            <span className="text-xl font-black text-sky-400 tabular-nums">
+            <span className="font-serif text-2xl font-bold text-gold tabular-nums">
               {formattedAttackBonus}
             </span>
           </div>
-          <Wand2 className="w-5 h-5 text-sky-400/70" />
+          <Wand2 className="w-5 h-5 text-gold/70" />
         </div>
       </div>
 
@@ -209,14 +210,14 @@ export const GrimoireSheet: React.FC<GrimoireSheetProps> = ({
         onSaveSlotsConfig={handleSaveSlotsConfig}
       />
 
-      <div className="flex bg-dnd-elevated p-1 rounded-xl border border-dnd-border">
+      <div className="flex bg-elevated p-1 rounded-xl border border-rule">
         <button
           type="button"
           onClick={() => setActiveTab('equipped')}
-          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 tap-control ${
             activeTab === 'equipped'
-              ? 'bg-dnd-blue text-white shadow-sm'
-              : 'text-dnd-muted hover:text-white'
+              ? 'bg-rose text-white shadow-sm'
+              : 'text-ink-soft hover:text-ink'
           }`}
         >
           <BookOpen className="w-4 h-4" /> Grimório
@@ -224,10 +225,10 @@ export const GrimoireSheet: React.FC<GrimoireSheetProps> = ({
         <button
           type="button"
           onClick={() => setActiveTab('catalog')}
-          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 tap-control ${
             activeTab === 'catalog'
-              ? 'bg-dnd-blue text-white shadow-sm'
-              : 'text-dnd-muted hover:text-white'
+              ? 'bg-rose text-white shadow-sm'
+              : 'text-ink-soft hover:text-ink'
           }`}
         >
           <Zap className="w-4 h-4" /> Todas as Magias
@@ -249,7 +250,7 @@ export const GrimoireSheet: React.FC<GrimoireSheetProps> = ({
       />
 
       {loadingCatalog && activeTab === 'catalog' ? (
-        <div className="text-center py-12 text-dnd-dim">Carregando feitiços...</div>
+        <div className="text-center py-12 text-ink-soft text-xs">Carregando feitiços...</div>
       ) : (
         <SpellCardGrid
           spells={displayedSpells}

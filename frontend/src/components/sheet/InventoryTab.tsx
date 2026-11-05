@@ -1,65 +1,138 @@
 import React from 'react';
-import { Package, Plus, Trash2, Coins, Scale } from 'lucide-react';
+import { Plus, Trash2, Scale } from 'lucide-react';
 import { useCharacterActions } from '../../context/CharacterContext';
 import type { EnrichedCharacter, InventoryItem } from '../../types/dnd5e';
+import { SectionTitle } from '../ui/SectionTitle';
+import { triggerHaptic } from '../../hooks/useHaptics';
+import { useHoldToExplain, type ExplainEntry } from '../../hooks/useHoldToExplain';
 
 interface InventoryTabProps {
   characterId: number;
   character: EnrichedCharacter;
   items: InventoryItem[];
   onOpenAddItemModal: () => void;
+  onExplain?: (entry: ExplainEntry) => void;
 }
+
+interface ItemRowCardProps {
+  item: InventoryItem;
+  onDelete: (id: number) => void;
+  onExplain?: (entry: ExplainEntry) => void;
+}
+
+const ItemRowCard: React.FC<ItemRowCardProps> = ({ item, onDelete, onExplain }) => {
+  const holdProps = useHoldToExplain(
+    {
+      title: item.name,
+      subtitle: `Quantidade: x${item.quantity} • Peso: ${(item.weight * item.quantity).toFixed(1)} kg`,
+      badge: `x${item.quantity}`,
+      description: item.effect || 'Item registrado na mochila do personagem.',
+    },
+    onExplain
+  );
+
+  return (
+    <div
+      {...holdProps}
+      className="codex-card p-3.5 flex items-center justify-between gap-3 holdable cursor-context-menu"
+    >
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-bold text-ink truncate">{item.name}</span>
+          <span className="text-xs font-bold text-ink-soft bg-elevated px-2 py-0.5 rounded-md border border-rule tabular-nums shrink-0">
+            x{item.quantity}
+          </span>
+          {item.weight > 0 && (
+            <span className="text-xs text-ink-soft tabular-nums shrink-0">
+              ({(item.weight * item.quantity).toFixed(1)} kg)
+            </span>
+          )}
+        </div>
+        {item.effect && (
+          <p className="text-xs text-ink-soft leading-relaxed mt-1">{item.effect}</p>
+        )}
+      </div>
+
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          triggerHaptic('tap');
+          onDelete(item.id);
+        }}
+        className="w-11 h-11 text-ink-soft hover:text-rose hover:bg-elevated rounded-xl flex items-center justify-center tap-control shrink-0"
+        title="Excluir item"
+        aria-label={`Excluir ${item.name}`}
+      >
+        <Trash2 className="w-4 h-4" />
+      </button>
+    </div>
+  );
+};
 
 export const InventoryTab: React.FC<InventoryTabProps> = ({
   character,
   items,
   onOpenAddItemModal,
+  onExplain,
 }) => {
   const actions = useCharacterActions();
-  const totalWeight = items.reduce((acc, item) => acc + (Number(item.weight) || 0) * (Number(item.quantity) || 1), 0);
-  const maxCarryWeight = (character.strength || 10) * 7.5; 
+  const totalWeight = items.reduce(
+    (acc, item) => acc + (Number(item.weight) || 0) * (Number(item.quantity) || 1),
+    0
+  );
+  const maxCarryWeight = (character.strength || 10) * 7.5;
 
   const COIN_CONFIG = [
-    { key: 'coins_gp' as const, label: 'PO', name: 'Ouro', color: 'text-amber-400', bg: 'bg-amber-500/10', border: 'border-amber-500/30' },
-    { key: 'coins_sp' as const, label: 'PP', name: 'Prata', color: 'text-gray-300', bg: 'bg-gray-500/10', border: 'border-gray-500/30' },
-    { key: 'coins_cp' as const, label: 'PC', name: 'Cobre', color: 'text-amber-700', bg: 'bg-amber-700/10', border: 'border-amber-700/30' },
-    { key: 'coins_pp' as const, label: 'PL', name: 'Platina', color: 'text-cyan-300', bg: 'bg-cyan-500/10', border: 'border-cyan-500/30' },
+    { key: 'coins_gp' as const, label: 'PO', name: 'Ouro', isGold: true },
+    { key: 'coins_sp' as const, label: 'PP', name: 'Prata', isGold: false },
+    { key: 'coins_cp' as const, label: 'PC', name: 'Cobre', isGold: false },
+    { key: 'coins_pp' as const, label: 'PL', name: 'Platina', isGold: false },
   ];
 
   return (
-    <div className="space-y-4">
-      <div className="bg-dnd-surface border border-dnd-border rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-dnd-gold-faint text-dnd-gold">
-            <Coins className="w-4 h-4" />
-          </div>
-          <h3 className="text-xs font-bold text-dnd-text uppercase tracking-wider">Bolsa de Moedas</h3>
-        </div>
-
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+    <div className="space-y-5">
+      {/* 1. BOLSA DE MOEDAS */}
+      <section aria-label="Bolsa de Moedas">
+        <SectionTitle title="Bolsa de Moedas" right="Toque em − / + para ajustar" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
           {COIN_CONFIG.map((c) => {
             const amount = character[c.key] || 0;
             return (
               <div
                 key={c.key}
-                className={`bg-dnd-elevated border ${c.border} rounded-xl p-3 flex flex-col justify-between`}
+                className="codex-card p-3 flex flex-col justify-between gap-2"
               >
-                <div className="flex items-center justify-between">
-                  <span className={`text-[10px] font-black uppercase ${c.color}`}>{c.label} ({c.name})</span>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-ink-soft">
+                  {c.label} ({c.name})
+                </span>
+                <div
+                  className={`font-serif text-2xl font-bold tabular-nums ${
+                    c.isGold ? 'text-gold' : 'text-ink'
+                  }`}
+                >
+                  {amount}
                 </div>
-                <div className={`text-xl font-black my-1.5 ${c.color}`}>{amount}</div>
-                <div className="flex items-center justify-between gap-1.5 pt-1.5 border-t border-dnd-border/60">
+                <div className="flex items-center justify-between gap-1.5 pt-2 border-t border-rule">
                   <button
                     type="button"
-                    onClick={() => actions.adjustCoin(c.key, -1)}
-                    className="w-10 h-10 bg-dnd-surface hover:bg-dnd-highlight text-dnd-muted hover:text-white rounded text-sm font-bold flex items-center justify-center active:scale-95 border border-dnd-border transition-colors min-h-10 min-w-10"
+                    onClick={() => {
+                      triggerHaptic('tap');
+                      actions.adjustCoin(c.key, -1);
+                    }}
+                    aria-label={`Diminuir ${c.name}`}
+                    className="flex-1 h-11 bg-elevated hover:bg-rule text-ink rounded-xl text-sm font-bold flex items-center justify-center border border-rule tap-control"
                   >
                     -
                   </button>
                   <button
                     type="button"
-                    onClick={() => actions.adjustCoin(c.key, 1)}
-                    className={`w-10 h-10 ${c.bg} ${c.color} hover:brightness-125 rounded text-sm font-bold flex items-center justify-center active:scale-95 transition-all min-h-10 min-w-10`}
+                    onClick={() => {
+                      triggerHaptic('tap');
+                      actions.adjustCoin(c.key, 1);
+                    }}
+                    aria-label={`Aumentar ${c.name}`}
+                    className="flex-1 h-11 bg-elevated hover:bg-rule text-ink rounded-xl text-sm font-bold flex items-center justify-center border border-rule tap-control"
                   >
                     +
                   </button>
@@ -68,76 +141,52 @@ export const InventoryTab: React.FC<InventoryTabProps> = ({
             );
           })}
         </div>
-      </div>
+      </section>
 
-      <div className="bg-dnd-surface border border-dnd-border rounded-2xl p-4 sm:p-5 shadow-sm space-y-3.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="p-1.5 rounded-lg bg-dnd-rose-faint text-dnd-rose">
-              <Package className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-xs font-bold text-dnd-text uppercase tracking-wider">Itens na Mochila</h3>
-              <span className="text-[10px] text-dnd-muted flex items-center gap-1 mt-0.5">
-                <Scale className="w-3 h-3 text-dnd-dim" />
-                <span>Peso: {totalWeight.toFixed(1)} / {maxCarryWeight} kg</span>
+      {/* 2. ITENS NA MOCHILA */}
+      <section aria-label="Itens na Mochila" className="space-y-2.5">
+        <SectionTitle
+          title="Itens na Mochila"
+          right={
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-ink-soft flex items-center gap-1 tabular-nums">
+                <Scale className="w-3.5 h-3.5" />
+                <span>
+                  Peso: {totalWeight.toFixed(1)} / {maxCarryWeight} kg
+                </span>
               </span>
+              <button
+                type="button"
+                onClick={() => {
+                  triggerHaptic('tap');
+                  onOpenAddItemModal();
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-soft/80 hover:bg-rose-soft text-rose border border-rose/30 rounded-xl text-xs font-bold tap-control"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Adicionar</span>
+              </button>
             </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onOpenAddItemModal}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-dnd-rose-faint hover:bg-rose-600/30 text-rose-300 border border-dnd-rose/40 rounded-xl text-xs font-semibold active:scale-95 transition-all min-h-11 min-w-11"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Adicionar</span>
-          </button>
-        </div>
+          }
+        />
 
         {items.length === 0 ? (
-          <div className="text-center py-8 text-dnd-dim text-xs border border-dashed border-dnd-border rounded-xl">
+          <div className="codex-card text-center py-8 px-4 text-ink-soft text-xs border-dashed">
             Sua mochila está vazia. Toque em "Adicionar" para registrar poções, equipamentos e tesouros.
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {items.map((item) => (
-              <div
+              <ItemRowCard
                 key={item.id}
-                className="bg-dnd-elevated hover:bg-dnd-highlight border border-dnd-border rounded-xl p-3 flex items-center justify-between transition-all group"
-              >
-                <div className="flex-1 pr-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">{item.name}</span>
-                    <span className="text-xs font-semibold text-dnd-dim bg-dnd-surface px-1.5 py-0.5 rounded border border-dnd-border">
-                      x{item.quantity}
-                    </span>
-                    {item.weight > 0 && (
-                      <span className="text-[10px] text-dnd-muted">
-                        ({(item.weight * item.quantity).toFixed(1)} kg)
-                      </span>
-                    )}
-                  </div>
-                  {item.effect && (
-                    <p className="text-[11px] text-dnd-muted leading-relaxed mt-1">{item.effect}</p>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => actions.deleteItem(item.id)}
-                    className="p-2 text-dnd-dim hover:text-dnd-rose hover:bg-dnd-surface rounded-lg transition-colors min-h-10 min-w-10 flex items-center justify-center"
-                    title="Excluir item"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
+                item={item}
+                onDelete={(id) => actions.deleteItem(id)}
+                onExplain={onExplain}
+              />
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 };

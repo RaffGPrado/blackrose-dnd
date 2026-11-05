@@ -6,6 +6,8 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
 import { get, set, del } from 'idb-keyval';
 import App from './App';
+import '@fontsource-variable/fraunces';
+import '@fontsource-variable/inter';
 import './index.css';
 
 const queryClient = new QueryClient({

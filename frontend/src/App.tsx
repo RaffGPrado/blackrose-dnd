@@ -49,16 +49,16 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-dnd-dark flex items-center justify-center">
-        <div className="text-rose-400 text-sm font-semibold animate-pulse">
-          Opening Black Rose Grimoire...
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="text-rose text-sm font-serif font-semibold animate-pulse">
+          Abrindo Grimório Black Rose...
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-dnd-dark text-dnd-text">
+    <div className="min-h-screen flex flex-col bg-paper text-ink">
       <Toaster richColors position="top-center" theme="dark" />
       <OfflineBanner
         isOnline={status.isOnline}

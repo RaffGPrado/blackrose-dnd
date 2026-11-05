@@ -1,101 +1,158 @@
 import React from 'react';
-import { Flame, Plus, Trash2, Sparkles } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useCharacterActions } from '../../context/CharacterContext';
 import type { ClassFeature } from '../../types/dnd5e';
+import { SectionTitle } from '../ui/SectionTitle';
+import { triggerHaptic } from '../../hooks/useHaptics';
+import { useHoldToExplain, type ExplainEntry } from '../../hooks/useHoldToExplain';
 
 interface FeaturesTabProps {
   characterId: number;
   features: ClassFeature[];
   onOpenAddModal: () => void;
+  onExplain?: (entry: ExplainEntry) => void;
 }
+
+interface FeatureCardItemProps {
+  feature: ClassFeature;
+  onAdjustUsage: (id: number, delta: number) => void;
+  onDelete: (id: number) => void;
+  onExplain?: (entry: ExplainEntry) => void;
+}
+
+const FeatureCardItem: React.FC<FeatureCardItemProps> = ({
+  feature,
+  onAdjustUsage,
+  onDelete,
+  onExplain,
+}) => {
+  const holdProps = useHoldToExplain(
+    {
+      title: feature.name,
+      subtitle:
+        feature.uses_max > 0
+          ? `Usos disponíveis: ${feature.uses_current} de ${feature.uses_max}`
+          : 'Característica Passiva',
+      badge:
+        feature.uses_max > 0 ? `${feature.uses_current}/${feature.uses_max}` : 'Passiva',
+      description:
+        feature.description || 'Característica ou talento registrado na sua ficha.',
+    },
+    onExplain
+  );
+
+  return (
+    <div
+      {...holdProps}
+      className="codex-card p-4 space-y-2.5 holdable cursor-context-menu flex flex-col justify-between"
+    >
+      <div>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="font-serif text-base font-bold text-ink">{feature.name}</h3>
+
+          <div
+            className="flex items-center gap-1.5 shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {feature.uses_max > 0 && (
+              <div className="flex items-center gap-1 bg-elevated px-2 py-1 rounded-xl border border-rule">
+                <span className="text-[10px] text-ink-soft font-bold uppercase mr-0.5">
+                  Usos:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('tap');
+                    onAdjustUsage(feature.id, -1);
+                  }}
+                  className="w-9 h-9 bg-card hover:bg-rule text-ink rounded-lg text-xs font-bold flex items-center justify-center border border-rule tap-control"
+                >
+                  -
+                </button>
+                <span className="font-serif text-sm font-bold text-rose px-1.5 tabular-nums">
+                  {feature.uses_current}/{feature.uses_max}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerHaptic('tap');
+                    onAdjustUsage(feature.id, 1);
+                  }}
+                  className="w-9 h-9 bg-card hover:bg-rule text-ink rounded-lg text-xs font-bold flex items-center justify-center border border-rule tap-control"
+                >
+                  +
+                </button>
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => {
+                triggerHaptic('tap');
+                onDelete(feature.id);
+              }}
+              className="w-10 h-10 text-ink-soft hover:text-rose hover:bg-elevated rounded-xl flex items-center justify-center tap-control"
+              title="Remover habilidade"
+              aria-label={`Remover ${feature.name}`}
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {feature.description && (
+          <p className="text-xs text-ink-soft leading-relaxed mt-1.5">
+            {feature.description}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export const FeaturesTab: React.FC<FeaturesTabProps> = ({
   features,
   onOpenAddModal,
+  onExplain,
 }) => {
   const actions = useCharacterActions();
 
   return (
-    <div className="bg-dnd-surface border border-dnd-border rounded-2xl p-4 sm:p-5 shadow-sm space-y-3.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-dnd-gold-faint text-dnd-gold">
-            <Flame className="w-4 h-4" />
-          </div>
-          <h3 className="text-xs font-bold text-dnd-text uppercase tracking-wider">Habilidades & Talentos</h3>
-        </div>
-
-        <button
-          type="button"
-          onClick={onOpenAddModal}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-dnd-gold-faint hover:bg-amber-500/30 text-amber-300 border border-dnd-gold/40 rounded-xl text-xs font-semibold active:scale-95 transition-all min-h-11 min-w-11"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Adicionar</span>
-        </button>
-      </div>
+    <section aria-label="Habilidades e Talentos" className="space-y-3">
+      <SectionTitle
+        title="Habilidades & Talentos"
+        right={
+          <button
+            type="button"
+            onClick={() => {
+              triggerHaptic('tap');
+              onOpenAddModal();
+            }}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-soft/80 hover:bg-rose-soft text-rose border border-rose/30 rounded-xl text-xs font-bold tap-control"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Adicionar</span>
+          </button>
+        }
+      />
 
       {features.length === 0 ? (
-        <div className="text-center py-8 text-dnd-dim text-xs border border-dashed border-dnd-border rounded-xl">
+        <div className="codex-card text-center py-8 px-4 text-ink-soft text-xs border-dashed">
           Nenhuma habilidade cadastrada. Toque em "Adicionar" para registrar Fúria, Ataque Furtivo, Visão no Escuro...
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {features.map((feat) => (
-            <div
+            <FeatureCardItem
               key={feat.id}
-              className="bg-dnd-elevated hover:bg-dnd-highlight border border-dnd-border rounded-xl p-3.5 space-y-2 transition-all group flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-dnd-gold shrink-0" />
-                    <span className="text-xs font-bold text-white">{feat.name}</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    {feat.uses_max > 0 && (
-                      <div className="flex items-center gap-1 bg-dnd-surface px-2 py-0.5 rounded-lg border border-dnd-border">
-                        <span className="text-[10px] text-dnd-muted font-semibold mr-0.5">Usos:</span>
-                        <button
-                          type="button"
-                          onClick={() => actions.adjustFeatureUsage(feat.id, -1)}
-                          className="w-8 h-8 bg-dnd-elevated hover:bg-dnd-highlight text-dnd-muted hover:text-white rounded text-xs font-bold flex items-center justify-center active:scale-95 min-h-8 min-w-8"
-                        >
-                          -
-                        </button>
-                        <span className="text-xs font-black text-dnd-gold px-1">
-                          {feat.uses_current}/{feat.uses_max}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => actions.adjustFeatureUsage(feat.id, 1)}
-                          className="w-8 h-8 bg-amber-900/80 hover:bg-amber-800 text-amber-200 rounded text-xs font-bold flex items-center justify-center active:scale-95 min-h-8 min-w-8"
-                        >
-                          +
-                        </button>
-                      </div>
-                    )}
-
-                    <button
-                      type="button"
-                      onClick={() => actions.deleteFeature(feat.id)}
-                      className="p-2 text-dnd-dim hover:text-dnd-rose hover:bg-dnd-surface rounded-lg transition-colors min-h-9 min-w-9 flex items-center justify-center"
-                      title="Remover habilidade"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                {feat.description && (
-                  <p className="text-[11px] text-dnd-muted leading-relaxed mt-1.5">{feat.description}</p>
-                )}
-              </div>
-            </div>
+              feature={feat}
+              onAdjustUsage={(id, delta) => actions.adjustFeatureUsage(id, delta)}
+              onDelete={(id) => actions.deleteFeature(id)}
+              onExplain={onExplain}
+            />
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 };
