@@ -1,7 +1,7 @@
 # 🌹 Black Rose D&D 5e — Architectural Documentation (arc42)
 
 > **Mobile-first, Offline-first D&D 5th Edition Character Sheet & Real-Time DM Companion**  
-> Construído com foco em resiliência, performance em mesas presenciais e conformidade estrita com as diretrizes do **D&D 5e System Reference Document (SRD 5.1)** sob licença **CC-BY-4.0**.
+> Projeto de fã construído com foco em resiliência, praticidade e performance para mesas presenciais e remotas.
 
 ---
 
@@ -39,21 +39,15 @@ O **Black Rose D&D** é um ecossistema projetado para agilizar o gerenciamento d
 | :--- | :--- |
 | **Jogador (Player)** | Velocidade para atualizar HP, gastar slots e lançar magias em segundos sem telas lentas. |
 | **Mestre (Dungeon Master)** | Monitoramento de iniciativa e vida da mesa em tempo real sem ter que perguntar a cada rodada. |
-| **Desenvolvedor / Comunidade** | Arquitetura limpa, testável, livre de infraestrutura pesada e respeitosa aos direitos autorais. |
+| **Desenvolvedor / Comunidade** | Arquitetura limpa, testável, fácil de rodar localmente e livre de infraestrutura pesada. |
 
 ---
 
 ## 2. Restrições de Arquitetura
 
-### 2.1 Restrições Técnicas & Operacionais
-
 - **Banco Embutido Zero-Config**: Utilização do SQLite nativo do Node.js (`node:sqlite` + Drizzle ORM) no modo WAL, sem exigir instâncias externas de PostgreSQL ou Redis.
 - **Mobile Target**: Funcional em qualquer navegador moderno mobile via Progressive Web App (PWA) e Service Worker.
-
-### 2.2 Restrições Legais e Propriedade Intelectual (Copyright)
-
-- **SRD 5.1 Compatibility**: O repositório inclui exclusivamente dados sob licença **Creative Commons Attribution 4.0 International (CC-BY-4.0)** da *Wizards of the Coast LLC*.
-- **Sem Assets Proprietários no Código-Fonte**: Imagens comerciais de cartas de magias, artes protegidas e dumps com dados pessoais de campanhas privadas **não são distribuídos** no repositório. O sistema foi construído para funcionar com dados abertos e renderizar fallbacks visuais limpos.
+- **Fallback Independente de Assets**: O sistema funciona integralmente apenas com os dados do compêndio embutido, renderizando cartões visuais caso imagens locais customizadas não estejam presentes.
 
 ---
 
@@ -257,8 +251,7 @@ Quando imagens de cartas de magia não forem fornecidas, o frontend ativa automa
 
 | Risco Identificado | Severidade | Mitigação Implementada |
 | :--- | :--- | :--- |
-| **Vazamento de Dados Pessoais / Hashes** | Alta | `.gitignore` configurado estritamente para impedir commits de arquivos `.db`, `.sqlite`, `.env` e backups. |
-| **Infração de Direitos Autorais (WotC/GF9)** | Alta | Remoção completa de scans proprietários do versionamento; adoção exclusiva de regras SRD 5.1 abertas sob CC-BY-4.0. |
+| **Vazamento de Dados Locais / Hashes** | Alta | `.gitignore` configurado estritamente para impedir commits de arquivos `.db`, `.sqlite`, `.env` e backups. |
 | **Perda de Dados em Quedas de Conexão** | Média | IndexedDB local com sincronização retroativa via `SyncManager` e modo WAL no SQLite. |
 
 ---
@@ -269,8 +262,8 @@ Quando imagens de cartas de magia não forem fornecidas, o frontend ativa automa
 
 O código-fonte deste projeto está licenciado sob a licença **MIT** — consulte o arquivo [LICENSE](LICENSE) para detalhes.
 
-### 12.2 Atribuição de Conteúdo de Terceiros (SRD 5.1 / CC-BY-4.0)
+### 12.2 Aviso de Projeto de Fã & Atribuição SRD 5.1 (CC-BY-4.0)
 
-Este trabalho inclui material extraído do *System Reference Document 5.1* ("SRD 5.1") da **Wizards of the Coast LLC**, disponível em [https://dnd.wizards.com/resources/systems-reference-document](https://dnd.wizards.com/resources/systems-reference-document).
+**Black Rose D&D** é um projeto de fã gratuito, não oficial e sem fins lucrativos, criado como ferramenta auxiliar para gerenciamento de fichas de RPG. Este projeto não é afiliado, patrocinado, aprovado ou endossado pela **Wizards of the Coast LLC**.
 
-O SRD 5.1 está licenciado sob a **Creative Commons Attribution 4.0 International License**, disponível em [https://creativecommons.org/licenses/by/4.0/legalcode](https://creativecommons.org/licenses/by/4.0/legalcode).
+Este trabalho inclui material extraído do *System Reference Document 5.1* ("SRD 5.1") da **Wizards of the Coast LLC**, disponível em [https://dnd.wizards.com/resources/systems-reference-document](https://dnd.wizards.com/resources/systems-reference-document). O SRD 5.1 está licenciado sob a **Creative Commons Attribution 4.0 International License**, disponível em [https://creativecommons.org/licenses/by/4.0/legalcode](https://creativecommons.org/licenses/by/4.0/legalcode).
