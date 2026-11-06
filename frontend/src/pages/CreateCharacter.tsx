@@ -159,7 +159,7 @@ export const CreateCharacter: React.FC<CreateCharacterProps> = ({ onBack, onSucc
 
         {loading ? (
           <div className="py-20 text-center text-dnd-dim text-sm animate-pulse">
-            Carregando opções do Livro do Jogador...
+            Carregando compêndio SRD 5.1...
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
